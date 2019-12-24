@@ -1,0 +1,13 @@
+[package]
+name = "store"
+version = "0.1.0"
+authors = ["Boyd Johnson <johnson.boyd@gmail.com>"]
+edition = "2018"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
+bincode = "^1.2"
+db-key = "^0.0.5"
+leveldb = "^0.8"
+serde = "^1.0"
