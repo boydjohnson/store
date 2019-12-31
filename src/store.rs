@@ -6,6 +6,7 @@ use leveldb::kv::KV;
 use leveldb::options::{Options, ReadOptions, WriteOptions};
 use serde::{Deserialize, Serialize};
 use std::path::Path;
+use crate::entry::Entry;
 
 pub struct Store<K: Key, T> {
     db: Database<K>,
@@ -47,6 +48,13 @@ where
         match result {
             Ok(option) => Store::<K, T>::deserialize(option),
             Err(err) => Err(StoreError::DatabaseError(err)),
+        }
+    }
+
+    pub fn entry<'a>(&'a mut self, key: K) -> Result<Entry<'a, K, T>, StoreError> {
+        match self.get(&key)? {
+            Some(_) => Ok(Entry::Occupied),
+            None => Ok(Entry::new_vacant(key, self)),
         }
     }
 
