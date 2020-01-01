@@ -1,3 +1,5 @@
+// Copyright 2020 Boyd Johnson
+
 //! Entry holds either an Occupied entry or a Vacant entry and
 //! allows for methods like `or_insert` and `or_insert_with`.
 

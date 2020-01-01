@@ -1,3 +1,5 @@
+// Copyright 2020 Boyd Johnson
+
 
 //! Store is a serialization wrapper around leveldb.
 

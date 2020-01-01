@@ -1,3 +1,4 @@
+// Copyright 2020 Boyd Johnson
 
 //! [Store](struct.Store.html) provides serialization over `leveldb` with `bincode`.
 //! This crate may be useful for creating cli tools where items must be stored and
