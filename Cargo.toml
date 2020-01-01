@@ -8,6 +8,8 @@ edition = "2018"
 
 license = "LGPL-3.0"
 
+repository = "https://github.com/boydjohnson/store"
+
 [dependencies]
 bincode = "^1.2"
 db-key = "^0.0.5"
