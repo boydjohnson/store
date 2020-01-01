@@ -1,3 +1,7 @@
+//! Entry holds either an Occupied entry or a Vacant entry and
+//! allows for methods like `or_insert` and `or_insert_with`.
+
+
 use crate::store::Store;
 use crate::error::StoreError;
 use db_key::Key;

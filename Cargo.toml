@@ -6,6 +6,8 @@ edition = "2018"
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
+license = "LGPL-3.0"
+
 [dependencies]
 bincode = "^1.2"
 db-key = "^0.0.5"

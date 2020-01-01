@@ -1,3 +1,6 @@
+
+//! Store is a serialization wrapper around leveldb.
+
 use crate::error::StoreError;
 use bincode::{deserialize, serialize};
 use db_key::Key;
@@ -8,6 +11,7 @@ use serde::{Deserialize, Serialize};
 use std::path::Path;
 use crate::entry::Entry;
 
+/// A Key value store over LevelDb that adds serialization/deserialization with `bincode`
 pub struct Store<K: Key, T> {
     db: Database<K>,
 
@@ -18,6 +22,7 @@ impl<K: Key, T> Store<K, T>
 where
     T: Serialize + for<'de> Deserialize<'de>,
 {
+    /// `new` makes a new Store from a Path.
     pub fn new(path: &Path) -> Result<Store<K, T>, StoreError> {
         let mut options = Options::new();
         options.create_if_missing = true;
@@ -27,11 +32,13 @@ where
         })
     }
 
-    pub fn new_store(prefix: &str) -> Result<Store<K, T>, StoreError> {
+    /// `tmp_store` creates a Store in the tmp directory with a prefix.
+    pub fn tmp_store(prefix: &str) -> Result<Store<K, T>, StoreError> {
         let tmp = tempdir::TempDir::new(prefix).map_err(|err| StoreError::FileSystemError(err))?;
         Store::new(tmp.path())
     }
 
+    /// `insert` allows inserting a key and a value.
     pub fn insert(&mut self, key: K, value: T) -> Result<(), StoreError> {
         self.db
             .put(
@@ -42,6 +49,7 @@ where
             .map_err(|err| StoreError::DatabaseError(err))
     }
 
+    /// `get` retrieves the value associated with a key.
     pub fn get(&self, key: &K) -> Result<Option<T>, StoreError> {
         let result = self.db.get(ReadOptions::new(), key);
 
@@ -51,6 +59,16 @@ where
         }
     }
 
+    /// `entry` returns an Entry.
+    /// 
+    /// # Example
+    /// 
+    /// .entry(key).or_insert(value)
+    /// 
+    /// # See
+    /// 
+    /// [Entry](../entry/enum.Entry.html)
+    /// 
     pub fn entry<'a>(&'a mut self, key: K) -> Result<Entry<'a, K, T>, StoreError> {
         match self.get(&key)? {
             Some(_) => Ok(Entry::Occupied),
@@ -58,10 +76,12 @@ where
         }
     }
 
+    /// An iterator over the keys in Store.
     pub fn iter_keys<'a>(&'a self) -> impl Iterator<Item = K> + 'a {
         self.db.keys_iter(ReadOptions::new())
     }
 
+    /// An iterator over the keys and values in Store.
     pub fn iter<'a>(&'a self) -> impl Iterator<Item = (K, T)> + 'a {
         self.db.iter(ReadOptions::new()).filter_map(|(key, value)| {
             match Store::<K, T>::deserialize_bytes(&value) {
@@ -71,6 +91,7 @@ where
         })
     }
 
+    /// An iterator over the values in Store.
     pub fn iter_values<'a>(&'a self) -> impl Iterator<Item = T> + 'a {
         self.db
             .value_iter(ReadOptions::new())

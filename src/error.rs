@@ -1,3 +1,6 @@
+
+//! Errors
+
 use leveldb::database::error::Error;
 
 pub enum StoreError {
