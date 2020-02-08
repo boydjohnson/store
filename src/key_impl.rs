@@ -42,3 +42,15 @@ impl Key for StringW {
         f(self.0.as_bytes())
     }
 }
+
+impl From<String> for StringW {
+    fn from(other: String) -> Self {
+        StringW(other)
+    }
+}
+
+impl Into<String> for StringW {
+    fn into(self) -> String {
+        self.0
+    }
+}
