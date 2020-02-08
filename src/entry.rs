@@ -3,11 +3,10 @@
 //! Entry holds either an Occupied entry or a Vacant entry and
 //! allows for methods like `or_insert` and `or_insert_with`.
 
-
-use crate::store::Store;
 use crate::error::StoreError;
+use crate::store::Store;
 use db_key::Key;
-use serde::{Serialize, Deserialize};
+use serde::{Deserialize, Serialize};
 
 pub enum Entry<'a, K: Key, T: Serialize + for<'de> Deserialize<'de>> {
     Occupied,
@@ -15,7 +14,6 @@ pub enum Entry<'a, K: Key, T: Serialize + for<'de> Deserialize<'de>> {
 }
 
 impl<'a, K: Key, T: Serialize + for<'de> Deserialize<'de>> Entry<'a, K, T> {
-
     pub fn or_insert(self, default: T) -> Result<(), StoreError> {
         if let Entry::Vacant(vacant) = self {
             vacant.insert(default)?;
@@ -31,9 +29,11 @@ impl<'a, K: Key, T: Serialize + for<'de> Deserialize<'de>> Entry<'a, K, T> {
     }
 
     pub fn new_vacant(key: K, store: &'a mut Store<K, T>) -> Self {
-        Entry::Vacant(VacantEntry {key: Some(key), store})
+        Entry::Vacant(VacantEntry {
+            key: Some(key),
+            store,
+        })
     }
-
 }
 
 pub struct VacantEntry<'a, K: Key, T: Serialize + for<'de> Deserialize<'de>> {

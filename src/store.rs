@@ -1,8 +1,8 @@
 // Copyright 2020 Boyd Johnson
 
-
 //! Store is a serialization wrapper around leveldb.
 
+use crate::entry::Entry;
 use crate::error::StoreError;
 use bincode::{deserialize, serialize};
 use db_key::Key;
@@ -11,7 +11,6 @@ use leveldb::kv::KV;
 use leveldb::options::{Options, ReadOptions, WriteOptions};
 use serde::{Deserialize, Serialize};
 use std::path::Path;
-use crate::entry::Entry;
 
 /// A Key value store over LevelDb that adds serialization/deserialization with `bincode`
 pub struct Store<K: Key, T> {
@@ -62,15 +61,15 @@ where
     }
 
     /// `entry` returns an Entry.
-    /// 
+    ///
     /// # Example
-    /// 
+    ///
     /// .entry(key).or_insert(value)
-    /// 
+    ///
     /// # See
-    /// 
+    ///
     /// [Entry](../entry/enum.Entry.html)
-    /// 
+    ///
     pub fn entry<'a>(&'a mut self, key: K) -> Result<Entry<'a, K, T>, StoreError> {
         match self.get(&key)? {
             Some(_) => Ok(Entry::Occupied),
