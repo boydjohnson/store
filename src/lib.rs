@@ -11,8 +11,11 @@
 //! impl `db_key::Key` for the Key
 //! impl `serde::Serialize` and `for<'de> serde::Deserialize<'de>` for the Value
 
+#![cfg_attr(feature = "long-key-impls", feature(fixed_size_array))]
+
 pub mod entry;
 pub mod error;
+pub mod key_impl;
 pub mod store;
 
 pub use crate::store::Store;

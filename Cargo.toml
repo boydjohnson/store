@@ -10,7 +10,12 @@ license = "LGPL-3.0"
 
 repository = "https://github.com/boydjohnson/store"
 
+[features]
+long-key-impls = ["arrayref"]
+
 [dependencies]
+arrayref = { version = "^0.3", optional = true }
+
 bincode = "^1.2"
 db-key = "^0.0.5"
 leveldb = "^0.8"
