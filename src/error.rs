@@ -4,6 +4,7 @@
 
 use leveldb::database::error::Error;
 
+#[derive(Debug)]
 pub enum StoreError {
     DatabaseError(Error),
     SerDeError(bincode::Error),
