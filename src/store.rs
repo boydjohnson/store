@@ -9,7 +9,7 @@ use db_key::Key;
 use leveldb::database::{iterator::Iterable, Database};
 use leveldb::kv::KV;
 use leveldb::options::{Options, ReadOptions, WriteOptions};
-use serde::{Deserialize, Serialize};
+use serde::{de::DeserializeOwned, Deserialize, Serialize};
 use std::path::Path;
 
 /// A Key value store over LevelDb that adds serialization/deserialization with `bincode`
@@ -22,6 +22,7 @@ pub struct Store<K: Key, T> {
 impl<K: Key, T> Store<K, T>
 where
     T: Serialize + for<'de> Deserialize<'de>,
+    T: Serialize + DeserializeOwned,
 {
     /// `new` makes a new Store from a Path.
     pub fn new(path: &Path) -> Result<Store<K, T>, StoreError> {
