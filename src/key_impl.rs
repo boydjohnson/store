@@ -27,7 +27,7 @@ impl From<&[u8]> for Long {
     }
 }
 
-#[derive(Debug, Eq, Hash, PartialEq)]
+#[derive(Debug, Eq, Hash, PartialEq, Clone)]
 pub struct StringW(pub String);
 
 impl Key for StringW {
