@@ -73,7 +73,7 @@ where
     ///
     pub fn entry<'a>(&'a mut self, key: K) -> Result<Entry<'a, K, T>, StoreError> {
         match self.get(&key)? {
-            Some(_) => Ok(Entry::Occupied),
+            Some(_) => Ok(Entry::new_occupied(key, self)),
             None => Ok(Entry::new_vacant(key, self)),
         }
     }
