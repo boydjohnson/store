@@ -11,11 +11,12 @@ use leveldb::kv::KV;
 use leveldb::options::{Options, ReadOptions, WriteOptions};
 use serde::{de::DeserializeOwned, Deserialize, Serialize};
 use std::path::Path;
+use tempdir::TempDir;
 
 /// A Key value store over LevelDb that adds serialization/deserialization with `bincode`
 pub struct Store<K: Key, T> {
     db: Database<K>,
-
+    _temp_dir: Option<TempDir>,
     phantom: std::marker::PhantomData<T>,
 }
 
@@ -25,11 +26,12 @@ where
     T: Serialize + DeserializeOwned,
 {
     /// `new` makes a new Store from a Path.
-    pub fn new(path: &Path) -> Result<Store<K, T>, StoreError> {
+    pub fn new(path: &Path, temp_dir: Option<TempDir>) -> Result<Store<K, T>, StoreError> {
         let mut options = Options::new();
         options.create_if_missing = true;
         Ok(Store {
             db: Database::open(path, options).map_err(|err| StoreError::DatabaseError(err))?,
+            _temp_dir: temp_dir,
             phantom: std::marker::PhantomData::default(),
         })
     }
@@ -37,7 +39,8 @@ where
     /// `tmp_store` creates a Store in the tmp directory with a prefix.
     pub fn tmp_store(prefix: &str) -> Result<Store<K, T>, StoreError> {
         let tmp = tempdir::TempDir::new(prefix).map_err(|err| StoreError::FileSystemError(err))?;
-        Store::new(tmp.path())
+        let path = tmp.path().to_owned();
+        Self::new(&path, Some(tmp))
     }
 
     /// `insert` allows inserting a key and a value.
