@@ -19,7 +19,7 @@ pub struct Store<K: Key, T> {
     phantom: std::marker::PhantomData<T>,
 }
 
-impl<K: Key, T> Store<K, T>
+impl<K: Key + Clone, T> Store<K, T>
 where
     T: Serialize + for<'de> Deserialize<'de>,
     T: Serialize + DeserializeOwned,

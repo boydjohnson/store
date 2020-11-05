@@ -13,7 +13,7 @@ pub enum Entry<'a, K: Key, T: Serialize + for<'de> Deserialize<'de>> {
     Vacant(VacantEntry<'a, K, T>),
 }
 
-impl<'a, K: Key, T: Serialize + for<'de> Deserialize<'de>> Entry<'a, K, T> {
+impl<'a, K: Key + Clone, T: Serialize + for<'de> Deserialize<'de>> Entry<'a, K, T> {
     pub fn or_insert(self, default: T) -> Result<(), StoreError> {
         if let Entry::Vacant(vacant) = self {
             vacant.insert(default)?;
@@ -29,30 +29,25 @@ impl<'a, K: Key, T: Serialize + for<'de> Deserialize<'de>> Entry<'a, K, T> {
     }
 
     pub fn new_vacant(key: K, store: &'a mut Store<K, T>) -> Self {
-        Entry::Vacant(VacantEntry {
-            key: Some(key),
-            store,
-        })
+        Entry::Vacant(VacantEntry { key: key, store })
     }
 }
 
 pub struct VacantEntry<'a, K: Key, T: Serialize + for<'de> Deserialize<'de>> {
-    key: Option<K>,
+    key: K,
     store: &'a mut Store<K, T>,
 }
 
-impl<'a, K: Key, T: Serialize + for<'de> Deserialize<'de>> VacantEntry<'a, K, T> {
+impl<'a, K: Key + Clone, T: Serialize + for<'de> Deserialize<'de>> VacantEntry<'a, K, T> {
     fn insert(self, value: T) -> Result<(), StoreError> {
-        if let Some(key) = self.key {
-            self.store.insert(key, value)?;
-        }
+        self.store.insert(self.key.clone(), value)?;
+
         Ok(())
     }
 
     fn insert_with<F: FnOnce() -> T>(self, f: F) -> Result<(), StoreError> {
-        if let Some(key) = self.key {
-            self.store.insert(key, f())?;
-        }
+        self.store.insert(self.key.clone(), f())?;
+
         Ok(())
     }
 }
